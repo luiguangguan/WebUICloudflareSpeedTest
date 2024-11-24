@@ -50,7 +50,7 @@ jobs:
           draft: false
           prerelease: false
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}  # 使用 PAT 替代默认的 GITHUB_TOKEN
 
       # Step 7: Upload dist.zip as release asset
       - name: Upload dist.zip
@@ -58,5 +58,5 @@ jobs:
         with:
           upload_url: ${{ steps.release.outputs.upload_url }}
           asset_path: dist.zip
-          asset_name: dist.zip  # 使用 run_id 作为文件名的一部分，避免冲突
+          asset_name: dist-${{ github.run_id }}.zip  # 使用 run_id 作为文件名的一部分，避免冲突
           asset_content_type: application/zip
