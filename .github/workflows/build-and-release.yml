@@ -3,15 +3,16 @@ name: Build and Release Vue Project
 on:
   push:
     branches:
-      - main  # 监听 main 分支的 push 事件，自动触发构建和发布
+      - main  # 自动触发推送到 main 分支时的构建和发布
   workflow_dispatch:  # 允许手动触发构建和发布
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # 在 Ubuntu 环境中运行
+    runs-on: ubuntu-latest  # 使用 Ubuntu 环境
+
     permissions:
-      contents: write  # 给 actions 提供创建 Release 和上传资产的权限
-      id-token: write   # 必要时提供访问权限，若使用身份验证
+      contents: write  # 需要写入权限才能创建和更新 Release
+      id-token: write  # 需要身份认证 token 权限（如果需要）
 
     steps:
       # Step 1: Checkout the code
@@ -27,12 +28,12 @@ jobs:
       # Step 3: Install dependencies
       - name: Install dependencies
         run: |
-          npm install
+          npm install  # 安装所有依赖
           
       # Step 4: Build Vue project
       - name: Build Vue project
         run: |
-          npm run build  # 执行 npm run build 来构建 Vue 项目
+          npm run build  # 执行构建命令，生成 dist 文件夹
           
       # Step 5: Zip dist folder
       - name: Zip dist folder
@@ -50,7 +51,7 @@ jobs:
           draft: false
           prerelease: false
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}  # 使用 PAT 替代默认的 GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用 GitHub 提供的默认 token（需要权限）
 
       # Step 7: Upload dist.zip as release asset
       - name: Upload dist.zip
@@ -60,3 +61,5 @@ jobs:
           asset_path: dist.zip
           asset_name: dist-${{ github.run_id }}.zip  # 使用 run_id 作为文件名的一部分，避免冲突
           asset_content_type: application/zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 需要上传时使用 token 进行身份验证
