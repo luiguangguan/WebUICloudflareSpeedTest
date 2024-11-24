@@ -9,6 +9,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest  # 在 Ubuntu 环境中运行
+    permissions:
+      contents: write  # 给 actions 提供创建 Release 和上传资产的权限
+      id-token: write   # 必要时提供访问权限，若使用身份验证
+
     steps:
       # Step 1: Checkout the code
       - name: Checkout code
