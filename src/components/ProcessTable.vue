@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
     <el-table :data="[data]" style="width: 100%">
       <el-table-column label="延迟进度" prop="Delay.Current">
         <template #default="{ row }">
@@ -12,7 +12,7 @@
       </el-table-column>
     </el-table>
   </template>
-  
+   -->
   <script>
   export default {
     props: ['data']

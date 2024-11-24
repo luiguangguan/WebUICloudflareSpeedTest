@@ -1,7 +1,10 @@
 <template>
   <div>
-    <el-progress :percentage="(processData.Delay.Current / processData.Delay.Total) * 100" />
-    <el-progress :percentage="(processData.Download.Current / processData.Download.Total) * 100" />
+    <h3>{{ processData.Delay.Current }}/{{   processData.Delay.Total}}</h3>
+    <el-progress :percentage="parseFloat(((processData.Delay.Current / processData.Delay.Total) * 100).toFixed(2))" />
+    <h3>{{ processData.Download.Current }}/{{   processData.Download.Total}}</h3>
+    <el-progress :percentage="parseFloat(((processData.Download.Current / processData.Download.Total) * 100).toFixed(2))" />
+
   </div>
 </template>
 

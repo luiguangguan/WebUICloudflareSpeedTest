@@ -5,14 +5,31 @@
       <el-tab-pane label="测速结果" name="maxData">
         <SpeedTestTable :data="maxData" />
       </el-tab-pane>
-      <el-tab-pane label="进度数据" name="processData">
-        <ProcessTable :data="maxData" />
+      <el-tab-pane label="测速结果(1 Day)" name="S1daymaxData">
+        <SpeedTestTable :data="S1daymaxData" />
       </el-tab-pane>
+      <el-tab-pane label="测速结果(3 Day)" name="S3daymaxData">
+        <SpeedTestTable :data="S3daymaxData" />
+      </el-tab-pane>
+      <el-tab-pane label="测速结果(5 Day)" name="S5daymaxData">
+        <SpeedTestTable :data="S5daymaxData" />
+      </el-tab-pane>
+      <el-tab-pane label="计划任务" name="scheduleData">
+        <div v-if="scheduleData.length > 0">
+        <ScheduleTable :data="scheduleData" />
+
+        </div>
+        <div v-else>
+          <p>没有计划任务数据</p>
+        </div>
+      </el-tab-pane>
+
+
     </el-tabs>
 
     <!-- 进度条展示 -->
     <ProgressBars :processData="processData" />
-    
+
     <div style="margin-top: 20px;">
       <!-- 刷新和时间选择框放在同一行 -->
       <el-row gutter={20}>
@@ -33,13 +50,13 @@
     </div>
 
     <!-- 暗黑模式切换按钮，放置在右下角 -->
-    <el-button
+    <!-- <el-button
       class="dark-mode-toggle"
       @click="toggleDarkMode"
       type="text"
       style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
       {{ isDarkMode ? '切换到亮色模式' : '切换到黑暗模式' }}
-    </el-button>
+    </el-button> -->
   </div>
 </template>
 
@@ -47,13 +64,13 @@
 import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
 import SpeedTestTable from './components/SpeedTestTable.vue';
-import ProcessTable from './components/ProcessTable.vue';
+import ScheduleTable from './components/ScheduleTable.vue';
 import ProgressBars from './components/ProgressBars.vue';
 
 export default {
   components: {
     SpeedTestTable,
-    ProcessTable,
+    ScheduleTable,
     ProgressBars
   },
   setup() {
@@ -62,9 +79,14 @@ export default {
 
     // Tab 切换
     const activeTab = ref('maxData'); // 当前激活的 Tab
+   
     const maxData = ref([]); // 存储MaxData接口数据
+    const S1daymaxData = ref([]); // 
+    const S3daymaxData = ref([]); // 
+    const S5daymaxData = ref([]); //  
     const processData = ref({ Delay: { Current: 0, Total: 0 }, Download: { Current: 0, Total: 0 } });
     const interval = ref(5000); // 默认自动刷新时间间隔为5秒
+    const scheduleData = ref([])//计划任务时间
     let autoRefresh = null;
 
     // 获取 MaxData 数据
@@ -76,6 +98,44 @@ export default {
         console.error('获取 MaxData 数据失败：', error);
       }
     };
+    const fetch1dayMaxData = async () => {
+      try {
+        const response = await axios.get('/Get1DayMaxData');
+        S1daymaxData.value = response.data;
+      } catch (error) {
+        console.error('获取 1DayMaxData 数据失败：', error);
+      }
+    };
+
+    const fetch3dayMaxData = async () => {
+      try {
+        const response = await axios.get('/Get3DayMaxData');
+        S3daymaxData.value = response.data;
+      } catch (error) {
+        console.error('获取 3DayMaxData 数据失败：', error);
+      }
+    };
+
+    const fetch5dayMaxData = async () => {
+      try {
+        const response = await axios.get('/Get5DayMaxData');
+        S5daymaxData.value = response.data;
+      } catch (error) {
+        console.error('获取 5DayMaxData 数据失败：', error);
+      }
+    };
+
+    // 获取计划任务数据
+    const fetchSchedules = async () => {
+      try {
+        const response = await axios.get('/Schedules');
+        scheduleData.value = response.data; // 假设后端返回的是一个字符串数组
+        console.log('Schedule Data:', scheduleData.value); // 打印出请求的数据，检查是否成功获取
+      } catch (error) {
+        console.error('获取 scheduleData 数据失败：', error);
+      }
+    };
+
 
     // 获取 Process 数据
     const fetchProcessData = async () => {
@@ -90,7 +150,11 @@ export default {
     // 刷新数据
     const refreshData = async () => {
       await fetchMaxData();
+      await fetch1dayMaxData();
+      await fetch3dayMaxData();
+      await fetch5dayMaxData();
       await fetchProcessData();
+      await fetchSchedules();
     };
 
     // 设置自动刷新
@@ -140,12 +204,16 @@ export default {
       isDarkMode,
       activeTab,
       maxData,
+      S1daymaxData,
+      S3daymaxData,
+      S5daymaxData,
       processData,
       interval,
       refreshData,
       setAutoRefresh,
       handleTabClick,
-      toggleDarkMode
+      toggleDarkMode,
+      scheduleData
     };
   }
 };
@@ -171,6 +239,7 @@ export default {
 .el-button {
   width: 100%;
 }
+
 .el-select {
   width: 100%;
 }
@@ -187,7 +256,8 @@ export default {
   color: #fff;
 }
 
-.dark-mode .el-table th, .dark-mode .el-table td {
+.dark-mode .el-table th,
+.dark-mode .el-table td {
   color: #fff;
 }
 
