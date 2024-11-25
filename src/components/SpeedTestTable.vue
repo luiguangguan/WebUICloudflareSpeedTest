@@ -1,11 +1,7 @@
 <template>
   <div>
     <!-- 按钮 - 复制拼接列 -->
-    <el-button 
-      type="success" 
-      icon="el-icon-copy-document" 
-      @click="copyIpRemarkColumn" 
-      style="margin-bottom: 20px;">
+    <el-button type="success" icon="el-icon-copy-document" @click="copyIpRemarkColumn" style="margin-bottom: 20px;">
       复制拼接列
     </el-button>
 
@@ -61,13 +57,17 @@ export default {
 
     // 复制内容到剪贴板
     copyToClipboard(content) {
-      const textarea = document.createElement('textarea');
-      textarea.value = content;
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
-      this.$message.success('已复制拼接列内容');
+      if (content != "") {
+        const textarea = document.createElement('textarea');
+        textarea.value = content;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        this.$message.success('已复制拼接列内容');
+      }else{
+        this.$message.error('似乎没有选择要复制的内容！！！？？');
+      }
     }
   }
 };
