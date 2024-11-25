@@ -25,8 +25,11 @@
       <el-tab-pane label="测速结果" name="maxData">
         <SpeedTestTable :data="maxData" />
       </el-tab-pane>
-      <el-tab-pane label="测速结果(1 Day)" name="S1daymaxData">
+      <el-tab-pane label="测速结果(今天)" name="S1daymaxData">
         <SpeedTestTable :data="S1daymaxData" />
+      </el-tab-pane>
+      <el-tab-pane label="测速结果(昨天)" name="SYesterdaymaxData">
+        <SpeedTestTable :data="SYesterdaymaxData" />
       </el-tab-pane>
       <el-tab-pane label="测速结果(3 Day)" name="S3daymaxData">
         <SpeedTestTable :data="S3daymaxData" />
@@ -82,6 +85,7 @@ export default {
     const activeTab = ref('maxData'); // 当前激活的 Tab
 
     const maxData = ref([]); // 存储MaxData接口数据
+    const SYesterdaymaxData = ref([]); // 
     const S1daymaxData = ref([]); // 
     const S3daymaxData = ref([]); // 
     const S5daymaxData = ref([]); //  
@@ -103,6 +107,14 @@ export default {
       try {
         const response = await axios.get('/Get1DayMaxData');
         S1daymaxData.value = response.data;
+      } catch (error) {
+        console.error('获取 1DayMaxData 数据失败：', error);
+      }
+    };  
+    const fetchYesterdayMaxData = async () => {
+      try {
+        const response = await axios.get('/GetYesterdayMaxData');
+        SYesterdaymaxData.value = response.data;
       } catch (error) {
         console.error('获取 1DayMaxData 数据失败：', error);
       }
@@ -151,6 +163,7 @@ export default {
     // 刷新数据
     const refreshData = async () => {
       await fetchMaxData();
+      await fetchYesterdayMaxData();
       await fetch1dayMaxData();
       await fetch3dayMaxData();
       await fetch5dayMaxData();
@@ -208,6 +221,7 @@ export default {
       isDarkMode,
       activeTab,
       maxData,
+      SYesterdaymaxData,
       S1daymaxData,
       S3daymaxData,
       S5daymaxData,
