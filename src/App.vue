@@ -1,5 +1,25 @@
 <template>
   <div>
+    <div style="margin-top: 20px;">
+      <!-- 刷新和时间选择框放在同一行 -->
+      <el-row gutter={20}>
+        <el-col :span="12">
+          <!-- 蓝色的刷新按钮 -->
+          <el-button type="primary" @click="refreshData">刷新数据</el-button>
+        </el-col>
+        <el-col :span="12">
+          <!-- 自动刷新设置 -->
+          <el-select v-model="interval" placeholder="选择刷新间隔" @change="setAutoRefresh" style="width: 100%;">
+            <el-option label="1秒" value="1000"></el-option>
+            <el-option label="5秒" value="5000"></el-option>
+            <el-option label="10秒" value="10000"></el-option>
+            <el-option label="15秒" value="15000"></el-option>
+            <el-option label="暂停" value="0"></el-option>
+          </el-select>
+        </el-col>
+      </el-row>
+    </div>
+
     <!-- Tabs 切换 -->
     <el-tabs v-model="activeTab" type="card" @tab-click="handleTabClick">
       <el-tab-pane label="测速结果" name="maxData">
@@ -16,38 +36,19 @@
       </el-tab-pane>
       <el-tab-pane label="计划任务" name="scheduleData">
         <div v-if="scheduleData.length > 0">
-        <ScheduleTable :data="scheduleData" />
+          <ScheduleTable :data="scheduleData" />
 
         </div>
         <div v-else>
           <p>没有计划任务数据</p>
         </div>
       </el-tab-pane>
-
+      <el-tab-pane label="进度条" name="processData">
+        <!-- 进度条展示 -->
+        <ProgressBars :processData="processData" />
+      </el-tab-pane>
 
     </el-tabs>
-
-    <!-- 进度条展示 -->
-    <ProgressBars :processData="processData" />
-
-    <div style="margin-top: 20px;">
-      <!-- 刷新和时间选择框放在同一行 -->
-      <el-row gutter={20}>
-        <el-col :span="12">
-          <!-- 蓝色的刷新按钮 -->
-          <el-button type="primary" @click="refreshData">刷新数据</el-button>
-        </el-col>
-        <el-col :span="12">
-          <!-- 自动刷新设置 -->
-          <el-select v-model="interval" placeholder="选择刷新间隔" @change="setAutoRefresh" style="width: 100%;">
-            <el-option label="1秒" value="1000"></el-option>
-            <el-option label="5秒" value="5000"></el-option>
-            <el-option label="10秒" value="10000"></el-option>
-            <el-option label="15秒" value="15000"></el-option>
-          </el-select>
-        </el-col>
-      </el-row>
-    </div>
 
     <!-- 暗黑模式切换按钮，放置在右下角 -->
     <!-- <el-button
@@ -79,7 +80,7 @@ export default {
 
     // Tab 切换
     const activeTab = ref('maxData'); // 当前激活的 Tab
-   
+
     const maxData = ref([]); // 存储MaxData接口数据
     const S1daymaxData = ref([]); // 
     const S3daymaxData = ref([]); // 
@@ -130,7 +131,7 @@ export default {
       try {
         const response = await axios.get('/Schedules');
         scheduleData.value = response.data; // 假设后端返回的是一个字符串数组
-        console.log('Schedule Data:', scheduleData.value); // 打印出请求的数据，检查是否成功获取
+        //console.log('Schedule Data:', scheduleData.value); // 打印出请求的数据，检查是否成功获取
       } catch (error) {
         console.error('获取 scheduleData 数据失败：', error);
       }
@@ -162,10 +163,13 @@ export default {
       if (autoRefresh) {
         clearInterval(autoRefresh);
       }
+      if (interval.value > 0) {
 
-      autoRefresh = setInterval(() => {
-        refreshData();
-      }, interval.value);
+        autoRefresh = setInterval(() => {
+          refreshData();
+        }, interval.value);
+      }
+
     };
 
     // 在页面加载时请求数据
