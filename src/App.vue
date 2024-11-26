@@ -89,7 +89,7 @@ export default {
     const S1daymaxData = ref([]); // 
     const S3daymaxData = ref([]); // 
     const S5daymaxData = ref([]); //  
-    const processData = ref({ Delay: { Current: 0, Total: 0 }, Download: { Current: 0, Total: 0 } });
+    const processData = ref({ Delay: { Current: 0, Total: 0 }, Download: { Current: 0, Total: 0 }, AllDataCount: 0 });
     const interval = ref(5000); // 默认自动刷新时间间隔为5秒
     const scheduleData = ref([])//计划任务时间
     let autoRefresh = null;
@@ -110,7 +110,7 @@ export default {
       } catch (error) {
         console.error('获取 1DayMaxData 数据失败：', error);
       }
-    };  
+    };
     const fetchYesterdayMaxData = async () => {
       try {
         const response = await axios.get('/GetYesterdayMaxData');
