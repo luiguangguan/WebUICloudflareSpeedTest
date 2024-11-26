@@ -20,6 +20,7 @@
       <el-table-column label="最大下载速度" prop="MaxDownloadSpeed" sortable />
       <el-table-column label="最小下载速度" prop="MinDownloadSpeed" sortable />
       <el-table-column label="平均丢包率" prop="AVGLossRate" sortable />
+      <el-table-column label="测速次数" prop="Count" sortable />
       <el-table-column label="备注" prop="Remark" sortable />
     </el-table>
   </div>
