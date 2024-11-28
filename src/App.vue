@@ -89,7 +89,7 @@ export default {
     const S1daymaxData = ref([]); // 
     const S3daymaxData = ref([]); // 
     const S5daymaxData = ref([]); //  
-    const processData = ref({ Delay: { Current: 0, Total: 0 }, Download: { Current: 0, Total: 0 }, AllDataCount: 0 });
+    const processData = ref({ Delay: { Current: 0, Total: 0, Port: 0 }, Download: { Current: 0, Total: 0, Remark: "" }, AllDataCount: 0, Port: 0, Remark: "" });
     const interval = ref(5000); // 默认自动刷新时间间隔为5秒
     const scheduleData = ref([])//计划任务时间
     let autoRefresh = null;
@@ -151,14 +151,56 @@ export default {
 
 
     // 获取 Process 数据
-    const fetchProcessData = async () => {
-      try {
-        const response = await axios.get('/Process');
-        processData.value = response.data;
-      } catch (error) {
-        console.error('获取 Process 数据失败：', error);
+    // const fetchProcessData = async () => {
+    //   try {
+    //     const response = await axios.get('/Process');
+    //     processData.value = response.data;
+    //   } catch (error) {
+    //     console.error('获取 Process 数据失败：', error);
+    //   }
+    // };
+
+    let socket;
+
+    function ProcessConnect() {
+      if (socket && socket.readyState !== WebSocket.CLOSED) {
+        console.log("Existing connection detected, skipping reconnect.");
+        return;
       }
-    };
+
+      // 初始化 WebSocket
+      socket = new WebSocket("/Process");
+
+      socket.onopen = () => {
+        console.log("WebSocket connection established.");
+      };
+
+      socket.onmessage = (event) => {
+        try {
+          console.log("Received data:", event.data);
+          if (event.data !== "heartbeat") {
+            processData.value = JSON.parse(event.data);
+          }
+          // 可以在这里更新页面显示
+        } catch (e) {
+          console.error("Error parsing WebSocket message:", e);
+          console.error("data:", event.data);
+        }
+      };
+
+      socket.onclose = (event) => {
+        console.log("WebSocket connection closed:", event.reason);
+        console.log("Reconnecting in 3 seconds...");
+        setTimeout(ProcessConnect, 3000); // 3 秒后重连
+      };
+
+      socket.onerror = (error) => {
+        console.error("WebSocket error:", error);
+      };
+    }
+
+    // 初始化连接
+    ProcessConnect();
 
     // 刷新数据
     const refreshData = async () => {
@@ -167,7 +209,7 @@ export default {
       await fetch1dayMaxData();
       await fetch3dayMaxData();
       await fetch5dayMaxData();
-      await fetchProcessData();
+      // await fetchProcessData();
       await fetchSchedules();
     };
 

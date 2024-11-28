@@ -6,7 +6,7 @@
     </el-button>
 
     <!-- 表格 -->
-    <el-table :data="dataWithIPRemark" style="width: 100%" @selection-change="handleSelectionChange">
+    <el-table :data="dataWithIPRemark" style="width: 100%" @selection-change="handleSelectionChange" :row-class-name="getRowClassName">
       <!-- 勾选框列 -->
       <el-table-column type="selection" width="55" />
 
@@ -58,7 +58,7 @@ export default {
 
     // 复制内容到剪贴板
     copyToClipboard(content) {
-      if (content != "") {
+      if (content !== "") {
         const textarea = document.createElement('textarea');
         textarea.value = content;
         document.body.appendChild(textarea);
@@ -66,21 +66,26 @@ export default {
         document.execCommand('copy');
         document.body.removeChild(textarea);
         this.$message.success('已复制拼接列内容');
-      }else{
+      } else {
         this.$message.error('似乎没有选择要复制的内容！！！？？');
       }
+    },
+
+    // 判断每一行的背景色
+    getRowClassName({ row }) {
+      // 判断最小下载速度是最大下载速度的一半及以上，且最大下载速度不小于 5
+      if (row.MinDownloadSpeed >= row.MaxDownloadSpeed / 2 && row.MaxDownloadSpeed >= 5) {
+        return 'highlight-row'; // 设置需要高亮的样式类
+      }
+      return '';
     }
   }
 };
 </script>
 
-<style scoped>
-.el-table {
-  margin-top: 20px;
-}
-
-/* 按钮样式 */
-.el-button {
-  margin-bottom: 20px;
+<style >
+/* Scoped 样式 */
+.highlight-row {
+  background-color: #caffc6 !important;
 }
 </style>
