@@ -37,18 +37,17 @@
       <el-tab-pane label="测速结果(5 Day)" name="S5daymaxData">
         <SpeedTestTable :data="S5daymaxData" />
       </el-tab-pane>
-      <el-tab-pane label="计划任务" name="scheduleData">
-        <div v-if="scheduleData.length > 0">
-          <ScheduleTable :data="scheduleData" />
-
+      <el-tab-pane label="计划任务" name="ScheduleData">
+        <div v-if="ScheduleData.length > 0">
+          <ScheduleTable :data="ScheduleData" />
         </div>
         <div v-else>
           <p>没有计划任务数据</p>
         </div>
       </el-tab-pane>
-      <el-tab-pane label="进度条" name="processData">
+      <el-tab-pane label="运行状态" name="processData">
         <!-- 进度条展示 -->
-        <ProgressBars :processData="processData" />
+        <ProgressBars :processData="processData" :socketStatus="SocketStatus" :socketStatusMsg="SocketStatusMsg" />
       </el-tab-pane>
 
     </el-tabs>
@@ -88,10 +87,44 @@ export default {
     const SYesterdaymaxData = ref([]); // 
     const S1daymaxData = ref([]); // 
     const S3daymaxData = ref([]); // 
-    const S5daymaxData = ref([]); //  
-    const processData = ref({ Delay: { Current: 0, Total: 0, Port: 0 }, Download: { Current: 0, Total: 0, Remark: "" }, AllDataCount: 0, Port: 0, Remark: "" });
+    const S5daymaxData = ref([]); // 
+    const SocketStatus = ref(false);
+    const SocketStatusMsg = ref("");
+    const processData = ref(
+      {
+        Delay: {
+          Current: 0,
+          Total: 0,
+          IP: "",
+          Port: 0,
+          Remark: "",
+          Available: 0,
+          Duration: {
+            StartTime: "",
+            Hours: 0,
+            Minutes: 0,
+            Seconds: 0
+          }
+        },
+        Download: {
+          Current: 0,
+          Total: 0,
+          IP: "",
+          Port: 0,
+          Remark: "",
+          Speed: 0,
+          Duration: {
+            StartTime: "",
+            Hours: 0,
+            Minutes: 0,
+            Seconds: 0
+          }
+        },
+        AllDataCount: 0,
+        NextTime: ""
+      });
     const interval = ref(5000); // 默认自动刷新时间间隔为5秒
-    const scheduleData = ref([])//计划任务时间
+    const ScheduleData = ref([])//计划任务时间
     let autoRefresh = null;
 
     // 获取 MaxData 数据
@@ -142,10 +175,10 @@ export default {
     const fetchSchedules = async () => {
       try {
         const response = await axios.get('/Schedules');
-        scheduleData.value = response.data; // 假设后端返回的是一个字符串数组
-        //console.log('Schedule Data:', scheduleData.value); // 打印出请求的数据，检查是否成功获取
+        ScheduleData.value = response.data; // 假设后端返回的是一个字符串数组
+        //console.log('Schedule Data:', ScheduleData.value); // 打印出请求的数据，检查是否成功获取
       } catch (error) {
-        console.error('获取 scheduleData 数据失败：', error);
+        console.error('获取 ScheduleData 数据失败：', error);
       }
     };
 
@@ -167,35 +200,48 @@ export default {
         console.log("Existing connection detected, skipping reconnect.");
         return;
       }
+      SocketStatusMsg.value = "开始连接...";
 
       // 初始化 WebSocket
       socket = new WebSocket("/Process");
 
       socket.onopen = () => {
         console.log("WebSocket connection established.");
+        SocketStatus.value = true;
+        SocketStatusMsg.value = "已连接"
+        console.log(typeof (SocketStatus.value))
+        console.log(typeof (SocketStatusMsg.value))
       };
 
       socket.onmessage = (event) => {
         try {
-          console.log("Received data:", event.data);
+          // console.log("Received data:", event.data);
           if (event.data !== "heartbeat") {
             processData.value = JSON.parse(event.data);
+            SocketStatus.value = true;
           }
           // 可以在这里更新页面显示
         } catch (e) {
           console.error("Error parsing WebSocket message:", e);
           console.error("data:", event.data);
         }
+        SocketStatusMsg.value = "已连接"
       };
 
       socket.onclose = (event) => {
+        let retrySec = 3;
         console.log("WebSocket connection closed:", event.reason);
         console.log("Reconnecting in 3 seconds...");
-        setTimeout(ProcessConnect, 3000); // 3 秒后重连
+        setTimeout(ProcessConnect, retrySec * 1000); // 3 秒后重连
+        SocketStatusMsg.value = `连接断开，${retrySec}秒后重试...`;
+        SocketStatus.value = false;
       };
+
 
       socket.onerror = (error) => {
         console.error("WebSocket error:", error);
+        SocketStatusMsg.value = "通信出错..."
+        SocketStatus.value = false;
       };
     }
 
@@ -273,7 +319,9 @@ export default {
       setAutoRefresh,
       handleTabClick,
       toggleDarkMode,
-      scheduleData
+      ScheduleData,
+      SocketStatus,
+      SocketStatusMsg
     };
   }
 };
