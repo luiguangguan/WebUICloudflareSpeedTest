@@ -90,6 +90,7 @@ export default {
     const S5daymaxData = ref([]); // 
     const SocketStatus = ref(false);
     const SocketStatusMsg = ref("");
+
     const processData = ref(
       {
         Delay: {
@@ -209,23 +210,19 @@ export default {
         console.log("WebSocket connection established.");
         SocketStatus.value = true;
         SocketStatusMsg.value = "已连接"
-        console.log(typeof (SocketStatus.value))
-        console.log(typeof (SocketStatusMsg.value))
       };
 
       socket.onmessage = (event) => {
         try {
-          // console.log("Received data:", event.data);
           if (event.data !== "heartbeat") {
             processData.value = JSON.parse(event.data);
-            SocketStatus.value = true;
           }
-          // 可以在这里更新页面显示
         } catch (e) {
           console.error("Error parsing WebSocket message:", e);
           console.error("data:", event.data);
         }
-        SocketStatusMsg.value = "已连接"
+        SocketStatus.value = true;
+        SocketStatusMsg.value = "已连接";
       };
 
       socket.onclose = (event) => {
@@ -237,14 +234,51 @@ export default {
         SocketStatus.value = false;
       };
 
-
       socket.onerror = (error) => {
         console.error("WebSocket error:", error);
-        SocketStatusMsg.value = "通信出错..."
+        SocketStatusMsg.value = "通信出错...";
         SocketStatus.value = false;
       };
     }
 
+    // 监听网络状态变化
+
+    window.addEventListener("online", (event) => {
+      console.log('Network is back online.');
+      // 重新连接 WebSocket
+      if (socket && socket.readyState !== WebSocket.CLOSED) {
+        SocketStatusMsg.value += " 網絡恢復"
+        socket.close();
+        ProcessConnect();
+      }
+    });
+
+    window.addEventListener('offline', (event) => {
+      console.log('Network is offline.');
+      // 你可以在这里处理设备离线状态的逻辑
+      SocketStatusMsg.value = "网络离线，等待恢复...";
+      SocketStatus.value = false;
+    });
+
+    navigator.connection.onchange = function (e) {
+      if (navigator.onLine) {
+        if (navigator.connection.type && navigator.connection.type === "wifi") {
+          if (socket && socket.readyState !== WebSocket.CLOSED) {
+            try {
+              // SocketStatusMsg.value
+              socket.close();
+              ProcessConnect();
+            } catch (e) {
+            }
+          }
+        }
+      } else {
+        SocketStatusMsg.value = "网络离线，等待恢复...";
+        SocketStatus.value = false;
+      }
+
+      // alert(JSON.stringify({ e: e, online: navigator.onLine, type: navigator.connection.type }))
+    }
     // 初始化连接
     ProcessConnect();
 
