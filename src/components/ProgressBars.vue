@@ -1,6 +1,7 @@
 <template>
   <div :class="ononlineStatusClass">
     <!-- 这里不需要加括号 -->
+    <h3>网络状态:<span :class="getNetStatusClassName">{{ netType }}</span></h3>
     <h3>连接状态:<span :class="getSocketStatusClassName">{{ socketStatusMsg }}</span></h3>
     <h2>数据总量：{{ processData.AllDataCount }}</h2>
     <h2>下次运行：{{ processData.NextTime }}</h2>
@@ -31,7 +32,7 @@
 
 <script>
 export default {
-  props: ['processData', 'socketStatusMsg', 'socketStatus'],
+  props: ['processData', 'socketStatusMsg', 'socketStatus','netType','netStatus'],
   methods: {
     pad(num) {
       return num >= 10 ? num : '0' + num;
@@ -41,6 +42,10 @@ export default {
     getSocketStatusClassName() {
       // 根据 socketStatus 动态返回类名
       return this.socketStatus ? 'SocketStatusSuccess' : 'SocketStatusFail';
+    },
+    getNetStatusClassName(){
+      // 根据 socketStatus 动态返回类名
+      return this.netStatus ? 'SocketStatusSuccess' : 'SocketStatusFail';
     },
     ononlineStatusClass(){
       return this.socketStatus ? '' : 'offline';

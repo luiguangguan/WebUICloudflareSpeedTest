@@ -47,7 +47,8 @@
       </el-tab-pane>
       <el-tab-pane label="运行状态" name="processData">
         <!-- 进度条展示 -->
-        <ProgressBars :processData="processData" :socketStatus="SocketStatus" :socketStatusMsg="SocketStatusMsg" />
+        <ProgressBars :processData="processData" :socketStatus="SocketStatus" :socketStatusMsg="SocketStatusMsg"
+          :netStatus="netStatus" :netType="netType" />
       </el-tab-pane>
 
     </el-tabs>
@@ -66,6 +67,7 @@
 <script>
 import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
+// import VConsole from "vconsole"
 import SpeedTestTable from './components/SpeedTestTable.vue';
 import ScheduleTable from './components/ScheduleTable.vue';
 import ProgressBars from './components/ProgressBars.vue';
@@ -89,7 +91,11 @@ export default {
     const S3daymaxData = ref([]); // 
     const S5daymaxData = ref([]); // 
     const SocketStatus = ref(false);
+    const netStatus = ref(false);
+    const netType = ref("");
     const SocketStatusMsg = ref("");
+
+    // const vConsole = new VConsole();
 
     const processData = ref(
       {
@@ -197,7 +203,7 @@ export default {
     let socket;
 
     function ProcessConnect() {
-      if (socket && socket.readyState !== WebSocket.CLOSED) {
+      if (socket && socket.readyState !== WebSocket.CLOSED && socket.readyState !== WebSocket.CLOSING) {
         console.log("Existing connection detected, skipping reconnect.");
         return;
       }
@@ -232,6 +238,7 @@ export default {
         setTimeout(ProcessConnect, retrySec * 1000); // 3 秒后重连
         SocketStatusMsg.value = `连接断开，${retrySec}秒后重试...`;
         SocketStatus.value = false;
+        // alert("鏈接已關閉")
       };
 
       socket.onerror = (error) => {
@@ -259,18 +266,24 @@ export default {
       SocketStatusMsg.value = "网络离线，等待恢复...";
       SocketStatus.value = false;
     });
-
+    function UpdateNetStatus() {
+      netStatus.value = navigator.onLine;
+      netType.value = navigator.connection.type;
+    }
     navigator.connection.onchange = function (e) {
+      UpdateNetStatus();
+
       if (navigator.onLine) {
         if (navigator.connection.type && navigator.connection.type === "wifi") {
-          if (socket && socket.readyState !== WebSocket.CLOSED) {
-            try {
-              // SocketStatusMsg.value
+          try {
+            // SocketStatusMsg.value
+            if (socket) {
               socket.close();
-              ProcessConnect();
-            } catch (e) {
+              // alert("關閉鏈接")
             }
+          } catch (e) {
           }
+          ProcessConnect();
         }
       } else {
         SocketStatusMsg.value = "网络离线，等待恢复...";
@@ -279,8 +292,14 @@ export default {
 
       // alert(JSON.stringify({ e: e, online: navigator.onLine, type: navigator.connection.type }))
     }
+
     // 初始化连接
     ProcessConnect();
+    UpdateNetStatus();
+
+    // setInterval(() => {
+    //   console.log(navigator.onLine);
+    // }, 1000);
 
     // 刷新数据
     const refreshData = async () => {
@@ -355,7 +374,9 @@ export default {
       toggleDarkMode,
       ScheduleData,
       SocketStatus,
-      SocketStatusMsg
+      SocketStatusMsg,
+      netType,
+      netStatus,
     };
   }
 };
