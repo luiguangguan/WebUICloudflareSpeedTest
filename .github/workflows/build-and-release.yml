@@ -68,5 +68,5 @@ jobs:
       run: |
         curl -X POST \
           -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          -d '{"ref": "main"}' \
+          -d '{"ref": "dev"}' \
           https://api.github.com/CloudflareSpeedTest/luiguangguan//dispatches
