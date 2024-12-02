@@ -65,8 +65,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 需要上传时使用 token 进行身份验证
 
       - name: Trigger B repository workflow
-      run: |
-        curl -X POST \
-          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          -d '{"ref": "dev"}' \
-          https://api.github.com/CloudflareSpeedTest/luiguangguan//dispatches
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -d '{"ref": "dev"}' \
+            https://api.github.com/CloudflareSpeedTest/luiguangguan//dispatches
