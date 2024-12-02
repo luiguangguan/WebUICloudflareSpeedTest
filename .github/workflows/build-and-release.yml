@@ -63,3 +63,10 @@ jobs:
           asset_content_type: application/zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 需要上传时使用 token 进行身份验证
+
+      - name: Trigger B repository workflow
+      run: |
+        curl -X POST \
+          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -d '{"ref": "main"}' \
+          https://api.github.com/CloudflareSpeedTest/luiguangguan//dispatches

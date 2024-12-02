@@ -24,7 +24,7 @@
     <h3>{{ processData.Download.Current }}/{{ processData.Download.Total }}</h3>
     <h3>当前IP：{{ processData.Download.IP }}:{{ processData.Download.Port }} <strong>{{ processData.Download.Remark
         }}</strong></h3>
-    <h3>下载速度：{{ processData.Download.Speed }}MB/s</h3>
+    <h3>下载速度：<span :class="speedColorClass">{{ processData.Download.Speed }}MB/s</span></h3>
     <el-progress
       :percentage="parseFloat(((processData.Download.Current / processData.Download.Total) * 100).toFixed(2))" />
   </div>
@@ -32,7 +32,7 @@
 
 <script>
 export default {
-  props: ['processData', 'socketStatusMsg', 'socketStatus','netType','netStatus'],
+  props: ['processData', 'socketStatusMsg', 'socketStatus', 'netType', 'netStatus'],
   methods: {
     pad(num) {
       return num >= 10 ? num : '0' + num;
@@ -43,12 +43,25 @@ export default {
       // 根据 socketStatus 动态返回类名
       return this.socketStatus ? 'SocketStatusSuccess' : 'SocketStatusFail';
     },
-    getNetStatusClassName(){
+    getNetStatusClassName() {
       // 根据 socketStatus 动态返回类名
       return this.netStatus ? 'SocketStatusSuccess' : 'SocketStatusFail';
     },
-    ononlineStatusClass(){
+    ononlineStatusClass() {
       return this.socketStatus ? '' : 'offline';
+    },
+    speedColorClass() {
+      if (this.processData.Download.Speed && this.processData.Download.Speed >= 5) {
+        return "s-height";
+      } else if (this.processData.Download.Speed < 5 && this.processData.Download.Speed >= 1) {
+        return "s-mid";
+
+      } else if (this.processData.Download.Speed && this.processData.Download.Speed < 1) {
+        return "s-low";
+
+      } else {
+        return "";
+      }
     }
   }
 };
@@ -66,7 +79,20 @@ export default {
 .SocketStatusFail {
   color: red;
 }
-.offline{
-  color:#888888
+
+.offline {
+  color: #888888
+}
+
+.s-low {
+  color: red;
+}
+
+.s-mid {
+  color: #ff9b1b;
+}
+
+.s-height {
+  color: rgb(1, 145, 1);
 }
 </style>
