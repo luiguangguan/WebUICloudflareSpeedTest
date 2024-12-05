@@ -6,7 +6,8 @@
     </el-button>
 
     <!-- 表格 -->
-    <el-table :data="dataWithIPRemark" style="width: 100%" @selection-change="handleSelectionChange" :row-class-name="getRowClassName">
+    <el-table :data="dataWithIPRemark" style="width: 100%" @selection-change="handleSelectionChange"
+      :row-class-name="getRowClassName">
       <!-- 勾选框列 -->
       <el-table-column type="selection" width="55" />
 
@@ -19,6 +20,7 @@
       <el-table-column label="最小延迟 (ms)" prop="MinDelay" sortable />
       <el-table-column label="最大下载速度" prop="MaxDownloadSpeed" sortable />
       <el-table-column label="最小下载速度" prop="MinDownloadSpeed" sortable />
+      <el-table-column label="平均下载速度" prop="AvgDownloadSpeed" sortable />
       <el-table-column label="平均丢包率" prop="AVGLossRate" sortable />
       <el-table-column label="测速次数" prop="Count" sortable />
       <el-table-column label="备注" prop="Remark" sortable />
@@ -74,18 +76,27 @@ export default {
     // 判断每一行的背景色
     getRowClassName({ row }) {
       // 判断最小下载速度是最大下载速度的一半及以上，且最大下载速度不小于 5
-      if (row.MinDownloadSpeed >= row.MaxDownloadSpeed / 2 && row.MaxDownloadSpeed >= 5) {
+      // if (row.MinDownloadSpeed >= row.MaxDownloadSpeed / 2 && row.MaxDownloadSpeed >= 5) {
+      //   return 'highlight-row'; // 设置需要高亮的样式类
+      // }
+      if (row.AvgDownloadSpeed >= 10) {
         return 'highlight-row'; // 设置需要高亮的样式类
+      } else if (row.AvgDownloadSpeed >= 5){
+        return 'mindlight-row'; // 设置需要高亮的样式类
       }
-      return '';
+        return '';
     }
   }
 };
 </script>
 
-<style >
+<style>
 /* Scoped 样式 */
 .highlight-row {
   background-color: #caffc6 !important;
+}
+
+.mindlight-row {
+  background-color: #faf759 !important;
 }
 </style>
