@@ -12,7 +12,15 @@
       <el-table-column type="selection" width="55" />
 
       <!-- 数据列 -->
-      <el-table-column label="拼接" prop="ipRemark" sortable />
+      <!-- <el-table-column label="拼接" prop="ipRemark" sortable /> -->
+      <el-table-column label="拼接" prop="ipRemark" sortable>
+        <template #default="{ row }">
+          <span
+            :style="{ fontWeight: hasMatchingIP(row.TraceInfo) ? 'bold' : 'normal', color: hasMatchingIP(row.TraceInfo) ? 'red' : 'inherit' }">
+            {{ row.ipRemark }}
+          </span>
+        </template>
+      </el-table-column>
       <el-table-column label="IP" prop="IP" sortable />
       <el-table-column label="日期" prop="Date" sortable />
       <el-table-column label="端口" prop="Port" sortable />
@@ -24,6 +32,20 @@
       <el-table-column label="平均丢包率" prop="AVGLossRate" sortable />
       <el-table-column label="测速次数" prop="Count" sortable />
       <el-table-column label="备注" prop="Remark" sortable />
+      <el-table-column label="路由信息" prop="TraceInfo" sortable>
+        <template #default="{ row }">
+          <div v-if="row.showFullTrace">
+            <div style="white-space: pre-wrap; word-break: break-word;">{{ row.TraceInfo }}</div>
+            <el-button type="text" size="small" @click="row.showFullTrace = false">收起</el-button>
+          </div>
+          <div v-else>
+            <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">
+              {{ row.TraceInfo }}
+            </div>
+            <el-button type="text" size="small" @click="row.showFullTrace = true">展开</el-button>
+          </div>
+        </template>
+      </el-table-column>
     </el-table>
   </div>
 </template>
@@ -43,7 +65,21 @@ export default {
         ...item,  // 保持原有字段
         ipRemark: `${item.IP}#${item.Port}#${item.Remark}`  // 新增连接的列
       }));
-    }
+    },
+    // 检查是否包含 59.43 开头的 IP
+    hasMatchingIP(traceInfo) {
+      const regex = /\b59\.43\.\d{1,3}\.\d{1,3}\b/;
+      return regex.test(traceInfo);
+    },
+    // 高亮显示匹配的 IP
+    highlightTraceInfo(traceInfo) {
+      const regex = /\b59\.43\.\d{1,3}\.\d{1,3}\b/g;
+      // 替换匹配的 IP 为带样式的 HTML
+      return traceInfo.replace(
+        regex,
+        (match) => `<span style="color: red; font-weight: bold;">${match}</span>`
+      );
+    },
   },
   methods: {
     // 处理勾选变化
@@ -81,10 +117,10 @@ export default {
       // }
       if (row.AvgDownloadSpeed >= 10) {
         return 'highlight-row'; // 设置需要高亮的样式类
-      } else if (row.AvgDownloadSpeed >= 5){
+      } else if (row.AvgDownloadSpeed >= 5) {
         return 'mindlight-row'; // 设置需要高亮的样式类
       }
-        return '';
+      return '';
     }
   }
 };
