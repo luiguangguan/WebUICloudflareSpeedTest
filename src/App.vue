@@ -53,6 +53,10 @@
       <el-tab-pane label="设置IP" name="IPs">
         <IPs></IPs>
       </el-tab-pane>
+      <el-tab-pane label="设置密码" name="EditPassword">
+        <EditPassword></EditPassword>
+      </el-tab-pane>
+
 
     </el-tabs>
 
@@ -74,6 +78,7 @@ import axios from 'axios';
 import SpeedTestTable from './components/SpeedTestTable.vue';
 import ScheduleTable from './components/ScheduleTable.vue';
 import ProgressBars from './components/ProgressBars.vue';
+import EditPassword from './components/EditPassword.vue';
 import IPs from './components/IPs.vue';
 
 export default {
@@ -81,7 +86,8 @@ export default {
     SpeedTestTable,
     ScheduleTable,
     ProgressBars,
-    IPs
+    IPs,
+    EditPassword
   },
   setup() {
     // 主题切换的状态
