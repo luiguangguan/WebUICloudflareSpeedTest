@@ -27,6 +27,10 @@
     <h3>下载速度：<span :class="speedColorClass">{{ processData.Download.Speed }}MB/s</span></h3>
     <el-progress
       :percentage="parseFloat(((processData.Download.Current / processData.Download.Total) * 100).toFixed(2))" />
+    <hr />
+    <h3>路由跟踪：{{ processData.TraceInfo.Total }}/{{ processData.TraceInfo.Index }}</h3>
+    <el-progress
+      :percentage="parseFloat(((processData.TraceInfo.Index / processData.TraceInfo.Total) * 100).toFixed(2))" />
   </div>
 </template>
 

@@ -50,6 +50,9 @@
         <ProgressBars :processData="processData" :socketStatus="SocketStatus" :socketStatusMsg="SocketStatusMsg"
           :netStatus="netStatus" :netType="netType" />
       </el-tab-pane>
+      <el-tab-pane label="设置IP" name="IPs">
+        <IPs></IPs>
+      </el-tab-pane>
 
     </el-tabs>
 
@@ -71,12 +74,14 @@ import axios from 'axios';
 import SpeedTestTable from './components/SpeedTestTable.vue';
 import ScheduleTable from './components/ScheduleTable.vue';
 import ProgressBars from './components/ProgressBars.vue';
+import IPs from './components/IPs.vue';
 
 export default {
   components: {
     SpeedTestTable,
     ScheduleTable,
-    ProgressBars
+    ProgressBars,
+    IPs
   },
   setup() {
     // 主题切换的状态
@@ -128,7 +133,11 @@ export default {
           }
         },
         AllDataCount: 0,
-        NextTime: ""
+        NextTime: "",
+        TraceInfo:{
+          Total:0,
+          Index:0,
+        }
       });
     const interval = ref(5000); // 默认自动刷新时间间隔为5秒
     const ScheduleData = ref([])//计划任务时间
