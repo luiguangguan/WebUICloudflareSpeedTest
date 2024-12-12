@@ -66,11 +66,6 @@ export default {
         ipRemark: `${item.IP}#${item.Port}#${item.Remark}`  // 新增连接的列
       }));
     },
-    // 检查是否包含 59.43 开头的 IP
-    hasMatchingIP(traceInfo) {
-      const regex = /\b59\.43\.\d{1,3}\.\d{1,3}\b/;
-      return regex.test(traceInfo);
-    },
     // 高亮显示匹配的 IP
     highlightTraceInfo(traceInfo) {
       const regex = /\b59\.43\.\d{1,3}\.\d{1,3}\b/g;
@@ -121,7 +116,12 @@ export default {
         return 'mindlight-row'; // 设置需要高亮的样式类
       }
       return '';
-    }
+    },
+     // 检查是否包含 59.43 开头的 IP
+     hasMatchingIP(traceInfo) {
+      const regex = /\b59\.43\.\d{1,3}\.\d{1,3}\b/;
+      return regex.test(traceInfo);
+    },
   }
 };
 </script>
