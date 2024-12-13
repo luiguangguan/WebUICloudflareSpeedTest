@@ -36,33 +36,50 @@ export default {
                 this.$message.error('请输入密码');
                 return;
             }
-            const url = '/IPs'; // 假设这是接口路径
 
-            let data;
-            if (action === '覆盖') {
-                data = { action: 'overwrite', content: this.text, password: this.password };
-            } else if (action === '追加') {
-                data = { action: 'append', content: this.text, password: this.password };
-            }
 
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data),
-                });
-                if (response.ok) {
-                    this.$message.success('成功');
-
-                } else {
-                    const errorData = await response.json();
-                    this.$message.error(errorData.message);
-
+            ElMessageBox.confirm(
+                `您确定要${action}数据吗?`, // 提示信息
+                '警告', // 标题
+                {
+                    confirmButtonText: '确认',
+                    cancelButtonText: '取消',
+                    type: 'warning', // 弹框类型
                 }
-            } catch (error) {
-            }
+            ).then(async () => {
+                // 用户点击确认后的操作
+                const url = '/IPs'; // 假设这是接口路径
+
+                let data;
+                if (action === '覆盖') {
+                    data = { action: 'overwrite', content: this.text, password: this.password };
+                } else if (action === '追加') {
+                    data = { action: 'append', content: this.text, password: this.password };
+                }
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data),
+                    });
+                    if (response.ok) {
+                        this.$message.success('成功');
+
+                    } else {
+                        const errorData = await response.json();
+                        this.$message.error(errorData.message);
+
+                    }
+                } catch (error) {
+                }
+            }).catch(() => {
+                // 用户点击取消后的操作
+                ElMessage.info('删除已取消');
+            });
+
         },
         async LoadIps() {
             try {
@@ -80,14 +97,14 @@ export default {
             // 显示确认框
             // $.ElMessageBox
             ElMessageBox.confirm(
-                '您确定要数据吗?', // 提示信息
+                '您确定要清空路由数据吗?', // 提示信息
                 '警告', // 标题
                 {
                     confirmButtonText: '确认',
                     cancelButtonText: '取消',
                     type: 'warning', // 弹框类型
                 }
-            ).then(async() => {
+            ).then(async () => {
                 // 用户点击确认后的操作
                 try {
                     if (!this.password) {
