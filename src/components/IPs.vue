@@ -12,13 +12,16 @@
             <el-button type="success" @click="LoadIps()" style="margin-bottom: 20px;">
                 加载...
             </el-button>
+            <el-button type="primary" @click="ClearTracerInfos('覆盖')" style="margin-bottom: 20px;">
+                清空路由信息
+            </el-button>
         </div>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
-
+import { ElMessageBox, ElMessage } from 'element-plus';
 export default {
     data() {
         return {
@@ -71,7 +74,55 @@ export default {
                 console.error('获取 MaxData 数据失败：', error);
             }
 
+        },
+        async ClearTracerInfos() {
+
+            // 显示确认框
+            // $.ElMessageBox
+            ElMessageBox.confirm(
+                '您确定要数据吗?', // 提示信息
+                '警告', // 标题
+                {
+                    confirmButtonText: '确认',
+                    cancelButtonText: '取消',
+                    type: 'warning', // 弹框类型
+                }
+            ).then(async() => {
+                // 用户点击确认后的操作
+                try {
+                    if (!this.password) {
+                        this.$message.error('请输入密码');
+                        return;
+                    }
+                    const url = '/ClearTracerInfo';
+                    let data = { password: this.password };
+
+
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data),
+                    });
+                    if (response.ok) {
+                        this.$message.success('成功');
+
+                    } else {
+                        const errorData = await response.json();
+                        this.$message.error(errorData.message);
+
+                    }
+                } catch (error) {
+                    this.$message.error(error);
+
+                }
+            }).catch(() => {
+                // 用户点击取消后的操作
+                ElMessage.info('删除已取消');
+            });
         }
+
     },
 };
 </script>
