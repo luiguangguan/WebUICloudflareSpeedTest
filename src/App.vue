@@ -52,6 +52,9 @@
       </el-tab-pane>
       <el-tab-pane label="设置IP" name="IPs">
         <IPs></IPs>
+      </el-tab-pane> 
+      <el-tab-pane label="配置文件设置" name="Config">
+        <Config></Config>
       </el-tab-pane>
       <el-tab-pane label="设置密码" name="EditPassword">
         <EditPassword></EditPassword>
@@ -80,12 +83,14 @@ import ScheduleTable from './components/ScheduleTable.vue';
 import ProgressBars from './components/ProgressBars.vue';
 import EditPassword from './components/EditPassword.vue';
 import IPs from './components/IPs.vue';
+import Config from './components/Config.vue';
 
 export default {
   components: {
     SpeedTestTable,
     ScheduleTable,
     ProgressBars,
+    Config,
     IPs,
     EditPassword
   },

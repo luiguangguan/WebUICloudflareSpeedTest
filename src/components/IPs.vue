@@ -12,7 +12,7 @@
             <el-button type="success" @click="LoadIps()" style="margin-bottom: 20px;">
                 加载...
             </el-button>
-            <el-button type="primary" @click="ClearTracerInfos('覆盖')" style="margin-bottom: 20px;">
+            <el-button type="primary" @click="ClearTracerInfos()" style="margin-bottom: 20px;">
                 清空路由信息
             </el-button>
         </div>
@@ -77,7 +77,7 @@ export default {
                 }
             }).catch(() => {
                 // 用户点击取消后的操作
-                ElMessage.info('删除已取消');
+                ElMessage.info(`${action}操作取消`);
             });
 
         },
@@ -88,7 +88,7 @@ export default {
                 this.$message.success('成功');
             } catch (error) {
                 this.$message.error('失败');
-                console.error('获取 MaxData 数据失败：', error);
+                console.error('获取数据失败：', error);
             }
 
         },
