@@ -53,6 +53,9 @@
       <el-tab-pane label="设置IP" name="IPs">
         <IPs></IPs>
       </el-tab-pane> 
+      <el-tab-pane label="IP测试（速度）" name="TestSpeed">
+        <TestSpeed></TestSpeed>
+      </el-tab-pane>
       <el-tab-pane label="配置文件设置" name="Config">
         <Config></Config>
       </el-tab-pane>
@@ -84,6 +87,7 @@ import ProgressBars from './components/ProgressBars.vue';
 import EditPassword from './components/EditPassword.vue';
 import IPs from './components/IPs.vue';
 import Config from './components/Config.vue';
+import TestSpeed from './components/TestSpeed.vue';
 
 export default {
   components: {
@@ -92,6 +96,7 @@ export default {
     ProgressBars,
     Config,
     IPs,
+    TestSpeed,
     EditPassword
   },
   setup() {
@@ -145,9 +150,9 @@ export default {
         },
         AllDataCount: 0,
         NextTime: "",
-        TraceInfo:{
-          Total:0,
-          Index:0,
+        TraceInfo: {
+          Total: 0,
+          Index: 0,
         }
       });
     const interval = ref(5000); // 默认自动刷新时间间隔为5秒
