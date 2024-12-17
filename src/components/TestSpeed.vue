@@ -10,8 +10,13 @@
         <div>
             <h4>{{ TestMsg }}</h4>
         </div>
-        <div v-for="ip in ips" style="color: green;">
-            {{ ip }}
+        <div v-for="ip in ips">
+            <div v-if="ip.Ok" style="color: green;">
+                {{ ip.IP }}#{{ ip.Port }}#{{ ip.Remark }}
+            </div>
+            <div v-else style="color: red;">
+                //{{ ip.IP }}#{{ ip.Port }}#{{ ip.Remark }}
+            </div>
         </div>
     </div>
 </template>
