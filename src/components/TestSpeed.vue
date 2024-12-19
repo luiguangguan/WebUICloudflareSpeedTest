@@ -1,7 +1,14 @@
 <template>
     <div>
         <textarea v-model="text" rows="30" cols="30" placeholder="请输入文本..."></textarea>
+        <div>
+            密码：
         <el-input placeholder="请输入密码" v-model="password" show-password></el-input>
+        </div>
+        <div>
+            无效IP前添加：
+            <el-input placeholder="失敗的IP的前添加的字符" v-model="FailFlag"></el-input>
+        </div>
         <div>
             <el-button type="primary" @click="TestSpeed()" style="margin-bottom: 20px;">
                 测试
@@ -15,7 +22,7 @@
                 {{ ip.IP }}#{{ ip.Port }}#{{ ip.Remark }}
             </div>
             <div v-else style="color: red;">
-                //{{ ip.IP }}#{{ ip.Port }}#{{ ip.Remark }}
+                {{ FailFlag }}{{ ip.IP }}#{{ ip.Port }}#{{ ip.Remark }}
             </div>
         </div>
     </div>
@@ -30,7 +37,8 @@ export default {
             text: '', // 用于存储文本框内容
             password: '',
             ips: [],
-            TestMsg: ""
+            TestMsg: "",
+            FailFlag:"//"
         };
     },
     methods: {
